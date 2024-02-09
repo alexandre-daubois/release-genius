@@ -1,9 +1,9 @@
 <?php
 
-namespace ConventionalVersion\Tests;
+namespace ConventionalVersion\Tests\Git\Model;
 
+use ConventionalVersion\Git\Model\Semver;
 use ConventionalVersion\ReleaseType;
-use ConventionalVersion\Semver;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 

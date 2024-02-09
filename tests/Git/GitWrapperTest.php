@@ -1,9 +1,9 @@
 <?php
 
-namespace ConventionalVersion\Tests;
+namespace ConventionalVersion\Tests\Git;
 
 use ConventionalVersion\CommandRunnerInterface;
-use ConventionalVersion\GitWrapper;
+use ConventionalVersion\Git\GitWrapper;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 

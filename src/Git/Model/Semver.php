@@ -7,7 +7,9 @@
  * file that was distributed with this source code.
  */
 
-namespace ConventionalVersion;
+namespace ConventionalVersion\Git\Model;
+
+use ConventionalVersion\ReleaseType;
 
 /**
  * This class represents a semantic version.
@@ -15,10 +17,10 @@ namespace ConventionalVersion;
 class Semver
 {
     /**
-     * @param int $major The major version number.
-     * @param int $minor The minor version number.
-     * @param int $patch The patch version number.
-     * @param bool $usesPrefix Whether the version uses a "v" prefix.
+     * @param int  $major      the major version number
+     * @param int  $minor      the minor version number
+     * @param int  $patch      the patch version number
+     * @param bool $usesPrefix whether the version uses a "v" prefix
      */
     public function __construct(
         public int $major,
@@ -30,7 +32,7 @@ class Semver
 
     /**
      * @return string The string representation of the version, in the
-     *              "vX.Y.Z" format if the version uses a prefix, or "X.Y.Z"
+     *                "vX.Y.Z" format if the version uses a prefix, or "X.Y.Z"
      */
     public function __toString(): string
     {
@@ -41,7 +43,7 @@ class Semver
      * Returns a new instance of Semver with the next version. The release type
      * will determine which part of the version will be incremented.
      */
-    public function next(ReleaseType $releaseType): static
+    public function next(ReleaseType $releaseType): self
     {
         return match ($releaseType) {
             ReleaseType::Major => new self($this->major + 1, 0, 0, $this->usesPrefix),

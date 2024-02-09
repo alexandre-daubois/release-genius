@@ -9,6 +9,7 @@
 
 namespace ConventionalVersion;
 
+use ConventionalVersion\Git\GitWrapper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -18,10 +19,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 class Runner
 {
-    public function __construct()
-    {
-    }
-
     /**
      * @throws \Throwable
      */
@@ -44,6 +41,8 @@ class Runner
             $io->section(sprintf('Creating a new %s release', $release->value));
             $io->comment(sprintf('The latest tag is: <options=bold>%s</>', $latestTag));
             $io->comment(sprintf('The next tag will be: <options=bold>%s</>', $nextTag));
+
+            $changelog = $gitWrapper->parseRelevantCommits($latestTag);
         } catch (\Throwable $throwable) {
             $io->error($throwable->getMessage());
 

@@ -7,8 +7,12 @@
  * file that was distributed with this source code.
  */
 
-namespace ConventionalVersion;
+namespace ConventionalVersion\Git;
 
+use ConventionalVersion\CommandRunnerInterface;
+use ConventionalVersion\Git\Model\Changelog;
+use ConventionalVersion\Git\Model\Commit;
+use ConventionalVersion\Git\Model\Semver;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\ExecutableFinder;
 
@@ -85,6 +89,27 @@ final class GitWrapper
         }
 
         return new Semver((int) $matches[1], (int) $matches[2], (int) $matches[3], 'v' === $result[0]);
+    }
+
+    public function parseRelevantCommits(Semver $lastTag): Changelog
+    {
+        // todo remove
+        $lastTag = new Semver(3, 143, 1, true);
+
+        try {
+            $result = $this->commandRunner->run(sprintf('%s log %s..HEAD --oneline', $this->executable, $lastTag));
+        } catch (\Throwable) {
+            throw new \RuntimeException('Could not get the commit messages from the repository.');
+        }
+
+        $rawCommits = explode(\PHP_EOL, trim($result));
+        $changeLog = new Changelog();
+
+        foreach ($rawCommits as $rawCommit) {
+            $changeLog->commits[] = Commit::fromString($rawCommit);
+        }
+
+        return $changeLog;
     }
 
     /**
