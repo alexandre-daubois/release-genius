@@ -12,6 +12,7 @@ namespace ConventionalVersion\Git;
 use ConventionalVersion\CommandRunnerInterface;
 use ConventionalVersion\Git\Model\Changelog;
 use ConventionalVersion\Git\Model\Commit;
+use ConventionalVersion\Git\Model\RawCommit;
 use ConventionalVersion\Git\Model\Semver;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\ExecutableFinder;
@@ -106,7 +107,13 @@ final class GitWrapper
         $changeLog = new Changelog();
 
         foreach ($rawCommits as $rawCommit) {
-            $changeLog->commits[] = Commit::fromString($rawCommit);
+            try {
+                $commit = Commit::fromString($rawCommit);
+            } catch (\Throwable) {
+                $commit = RawCommit::fromString($rawCommit);
+            }
+
+            $changeLog->commits[] = $commit;
         }
 
         return $changeLog;
