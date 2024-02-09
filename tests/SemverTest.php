@@ -48,4 +48,18 @@ class SemverTest extends TestCase
         $this->assertSame(2, $next->minor);
         $this->assertSame(4, $next->patch);
     }
+
+    public function testSemverToString(): void
+    {
+        $semver = new Semver(1, 2, 3);
+
+        $this->assertSame('1.2.3', (string) $semver);
+    }
+
+    public function testSemverToStringWithPrefix(): void
+    {
+        $semver = new Semver(1, 2, 3, true);
+
+        $this->assertSame('v1.2.3', (string) $semver);
+    }
 }

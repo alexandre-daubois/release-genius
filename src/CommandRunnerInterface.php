@@ -9,6 +9,10 @@
 
 namespace ConventionalVersion;
 
+/**
+ * This is just a simple Wrapper around Symfony's Process component. This will
+ * allow us to mock some of the git commands in tests.
+ */
 interface CommandRunnerInterface
 {
     public function run(string $cmd): string;

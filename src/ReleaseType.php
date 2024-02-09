@@ -9,6 +9,9 @@
 
 namespace ConventionalVersion;
 
+/**
+ * The application will accept one of these three release types as an argument.
+ */
 enum ReleaseType: string
 {
     case Major = 'major';

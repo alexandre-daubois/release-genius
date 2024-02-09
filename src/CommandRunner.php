@@ -18,6 +18,9 @@ use Symfony\Component\Process\Process;
 class CommandRunner implements CommandRunnerInterface
 {
     /**
+     * Runs a command and returns its output. If the command fails, an exception
+     * is thrown.
+     *
      * @throws \RuntimeException
      */
     public function run(string $cmd): string

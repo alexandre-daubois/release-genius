@@ -9,8 +9,17 @@
 
 namespace ConventionalVersion;
 
+/**
+ * This class represents a semantic version.
+ */
 class Semver
 {
+    /**
+     * @param int $major The major version number.
+     * @param int $minor The minor version number.
+     * @param int $patch The patch version number.
+     * @param bool $usesPrefix Whether the version uses a "v" prefix.
+     */
     public function __construct(
         public int $major,
         public int $minor,
@@ -19,12 +28,20 @@ class Semver
     ) {
     }
 
+    /**
+     * @return string The string representation of the version, in the
+     *              "vX.Y.Z" format if the version uses a prefix, or "X.Y.Z"
+     */
     public function __toString(): string
     {
-        return sprintf('v%d.%d.%d', $this->major, $this->minor, $this->patch);
+        return sprintf('%s%d.%d.%d', $this->usesPrefix ? 'v' : '', $this->major, $this->minor, $this->patch);
     }
 
-    public function next(ReleaseType $releaseType): self
+    /**
+     * Returns a new instance of Semver with the next version. The release type
+     * will determine which part of the version will be incremented.
+     */
+    public function next(ReleaseType $releaseType): static
     {
         return match ($releaseType) {
             ReleaseType::Major => new self($this->major + 1, 0, 0, $this->usesPrefix),
