@@ -3,7 +3,7 @@
 
 if (\PHP_VERSION_ID < 80200) {
     fwrite(
-        STDERR,
+        \STDERR,
         \sprintf("You must use at least PHP 8.2.0, and you're using PHP %s. Please consider upgrading your PHP binary.", \PHP_VERSION)
     );
 
@@ -13,7 +13,7 @@ if (\PHP_VERSION_ID < 80200) {
 if (isset($GLOBALS['_composer_autoload_path'])) {
     \define('LOCAL_COMPOSER_INSTALL', $GLOBALS['_composer_autoload_path']);
 } else {
-    foreach (array(__DIR__.'/../../autoload.php', __DIR__.'/../vendor/autoload.php', __DIR__.'/vendor/autoload.php') as $file) {
+    foreach ([__DIR__.'/../../autoload.php', __DIR__.'/../vendor/autoload.php', __DIR__.'/vendor/autoload.php'] as $file) {
         if (\file_exists($file)) {
             \define('LOCAL_COMPOSER_INSTALL', $file);
 
@@ -26,7 +26,7 @@ if (isset($GLOBALS['_composer_autoload_path'])) {
 
 if (!defined('LOCAL_COMPOSER_INSTALL')) {
     \fwrite(
-        STDERR,
+        \STDERR,
         'Composer has not been setup. Please consider running `composer install`.'.\PHP_EOL
     );
 

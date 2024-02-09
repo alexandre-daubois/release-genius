@@ -9,7 +9,8 @@ class Semver
         public int $minor,
         public int $patch,
         public bool $usesPrefix = false,
-    ) {}
+    ) {
+    }
 
     public function __toString(): string
     {
