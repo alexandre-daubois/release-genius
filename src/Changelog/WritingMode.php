@@ -7,14 +7,11 @@
  * file that was distributed with this source code.
  */
 
-namespace ConventionalVersion\Git\Model;
+namespace ConventionalVersion\Changelog;
 
-class Changelog
+enum WritingMode: string
 {
-    /**
-     * @param array<CommitInterface> $commits
-     */
-    public function __construct(public array $commits = [])
-    {
-    }
+    case Append = 'append';
+    case Prepend = 'prepend';
+    case Overwrite = 'overwrite';
 }

@@ -31,6 +31,20 @@ class Semver
     }
 
     /**
+     * Creates a new instance of Semver from a string. The string must be in the
+     * "vX.Y.Z" format if the version uses a prefix, or "X.Y.Z" otherwise.
+     */
+    public static function fromString(string $version): self
+    {
+        $matches = [];
+        if (!preg_match('/^v?(\d+)\.(\d+)\.(\d+)$/', $version, $matches)) {
+            throw new \InvalidArgumentException(sprintf('The version "%s" is not a valid Semver version', $version));
+        }
+
+        return new self((int) $matches[1], (int) $matches[2], (int) $matches[3], $version[0] === 'v');
+    }
+
+    /**
      * @return string The string representation of the version, in the
      *                "vX.Y.Z" format if the version uses a prefix, or "X.Y.Z"
      */

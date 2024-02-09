@@ -54,7 +54,10 @@ require __DIR__.'/vendor/autoload.php';
 (new SingleCommandApplication())
     ->setName('Conventional Version')
     ->setVersion('0.1')
+    ->setDescription('Generate a new release based on the conventional commits')
     ->addArgument('release type', InputArgument::REQUIRED, 'The type of release to be generated (major, minor, patch)')
+    ->addOption('path', 'f', InputArgument::OPTIONAL, 'The file to write the changelog to', 'CHANGELOG.md')
+    ->addOption('mode', 'm', InputArgument::OPTIONAL, 'The writing mode to use when writing the changelog to a file, between prepend, append and overwrite', 'prepend')
     ->setCode(function (InputInterface $input, OutputInterface $output): int {
         try {
             return Runner::run($input, $output);

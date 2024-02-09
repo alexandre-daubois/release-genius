@@ -3,9 +3,11 @@
 namespace ConventionalVersion\Tests\Git\Model;
 
 use ConventionalVersion\Git\Model\Commit;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(Commit::class)]
 class CommitTest extends TestCase
 {
     public function testCreateCommit(): void
