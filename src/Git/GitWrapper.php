@@ -124,6 +124,19 @@ final class GitWrapper
     }
 
     /**
+     * This method is used to create a new tag in the repository. It does so by
+     * running the following command:
+     *
+     *   git tag -a <version> -m "chore(release): <version>"
+     *
+     * @throws \RuntimeException
+     */
+    public function createTag(Semver $version): void
+    {
+        $this->commandRunner->run(sprintf('%s tag -a %s -m "chore(release): %s"', $this->executable, $version, $version));
+    }
+
+    /**
      * This method is used to set the "git" executable. It is useful for testing
      * purposes, as it allows us to inject a mock or a stub of the "git" executable.
      *
