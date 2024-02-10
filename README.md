@@ -3,6 +3,8 @@ Conventional Version
 
 [![PHPUnit](https://github.com/alexandre-daubois/conventional-version/actions/workflows/php.yaml/badge.svg)](https://github.com/alexandre-daubois/conventional-version/actions/workflows/php.yaml)
 
+![Conventional version screenshot](asset/conv-vers.png)
+
 ## Requirements
 
 - PHP 8.2 or higher
