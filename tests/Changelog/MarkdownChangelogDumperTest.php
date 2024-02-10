@@ -134,6 +134,34 @@ MARKDOWN;
         unlink($changelogFilePath);
     }
 
+    public function testInit(): void
+    {
+        $dumper = new MarkdownChangelogDumper();
+
+        $changelogFilePath = __DIR__.'/../sandbox/'.__METHOD__.'.md';
+        $firstVersion = Semver::fromString('1.0.0');
+
+        $dumper->init($changelogFilePath, $firstVersion);
+
+        $expected = <<<MARKDOWN
+# Changelog
+
+All notable changes to this project will be documented in this file.
+This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## 1.0.0
+
+ * Initial release
+
+MARKDOWN;
+
+        $this->assertFileExists($changelogFilePath);
+        $this->assertSame($expected, file_get_contents($changelogFilePath));
+
+        unlink($changelogFilePath);
+    }
+
+
     private function createSampleChangelog(): Changelog
     {
         $changelog = new Changelog(Semver::fromString('1.0.0'), Semver::fromString('2.0.0'));

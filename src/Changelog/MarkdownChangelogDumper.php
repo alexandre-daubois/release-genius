@@ -11,6 +11,7 @@ namespace ConventionalVersion\Changelog;
 
 use ConventionalVersion\Git\Model\Commit;
 use ConventionalVersion\Git\Model\RawCommit;
+use ConventionalVersion\Git\Model\Semver;
 
 class MarkdownChangelogDumper implements ChangelogDumperInterface, FileChangelogDumperInterface
 {
@@ -62,6 +63,22 @@ class MarkdownChangelogDumper implements ChangelogDumperInterface, FileChangelog
             WritingMode::Overwrite => $changelogFile->fwrite($content),
             WritingMode::Prepend => $this->prependToFile($changelogFilePath, $content),
         };
+    }
+
+    public function init(string $changelogFilePath, Semver $firstVersion): void
+    {
+        $changelogFile = new \SplFileObject($changelogFilePath, 'w+');
+        $changelogFile->fwrite(<<<MARKDOWN
+# Changelog
+
+All notable changes to this project will be documented in this file.
+This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## $firstVersion
+
+ * Initial release
+
+MARKDOWN);
     }
 
     /**

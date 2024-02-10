@@ -46,6 +46,7 @@ use ConventionalVersion\Runner;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\SingleCommandApplication;
 
@@ -55,9 +56,10 @@ require __DIR__.'/vendor/autoload.php';
     ->setName('Conventional Version')
     ->setVersion('0.1')
     ->setDescription('Generate a new release based on the conventional commits')
-    ->addArgument('release type', InputArgument::REQUIRED, 'The type of release to be generated (major, minor, patch)')
-    ->addOption('path', 'f', InputArgument::OPTIONAL, 'The file to write the changelog to', 'CHANGELOG.md')
-    ->addOption('mode', 'm', InputArgument::OPTIONAL, 'The writing mode to use when writing the changelog to a file, between prepend, append and overwrite', 'prepend')
+    ->addArgument('release type', InputArgument::OPTIONAL, 'The type of release to be generated (major, minor, patch)')
+    ->addOption('path', 'f', InputOption::VALUE_REQUIRED, 'The file to write the changelog to', 'CHANGELOG.md')
+    ->addOption('mode', 'm', InputOption::VALUE_REQUIRED, 'The writing mode to use when writing the changelog to a file, between prepend, append and overwrite', 'prepend')
+    ->addOption('init', 'i', InputOption::VALUE_NONE, 'Initialize the changelog file and create a new git tag')
     ->setCode(function (InputInterface $input, OutputInterface $output): int {
         try {
             return Runner::run($input, $output);

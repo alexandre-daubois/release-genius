@@ -12,11 +12,14 @@ namespace ConventionalVersion;
 use ConventionalVersion\Changelog\MarkdownChangelogDumper;
 use ConventionalVersion\Changelog\WritingMode;
 use ConventionalVersion\Git\GitWrapper;
+use ConventionalVersion\Git\Model\Semver;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
@@ -24,57 +27,94 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 class Runner
 {
+    private static GitWrapper $gitWrapper;
+    private static SymfonyStyle $io;
+
     /**
      * @throws \Throwable
      */
     public static function run(InputInterface $input, OutputInterface $output): int
     {
-        $io = new SymfonyStyle($input, $output);
-        $gitWrapper = new GitWrapper(new CommandRunner());
+        static::$io = new SymfonyStyle($input, $output);
+        static::$gitWrapper = new GitWrapper(new CommandRunner());
 
         try {
-            if (null === $release = ReleaseType::tryFrom($input->getArgument('release type'))) {
-                throw new \InvalidArgumentException(sprintf('Expected one of "major", "minor", or "patch", but got "%s".', $input->getArgument('release type')));
+            static::$io->section('Checking requirements');
+            static::$gitWrapper->checkRequirements(static::$io);
+
+            if (!$input->getOption('init')) {
+                return static::newRelease($input, $output);
             }
 
-            if (null === $writingMode = WritingMode::tryFrom($input->getOption('mode'))) {
-                throw new \InvalidArgumentException(sprintf('Expected one of "prepend", "append", or "overwrite", but got "%s".', $input->getOption('mode')));
-            }
-
-            $path = $input->getOption('path');
-
-            $io->section('Checking requirements');
-            $gitWrapper->checkRequirements($io);
-
-            $latestTag = $gitWrapper->getLatestTag();
-            $nextTag = $latestTag->next($release);
-
-            $io->section(sprintf('Creating a new %s release', $release->value));
-            $io->comment(sprintf('The latest tag is: <options=bold>%s</>', $latestTag));
-            $io->comment(sprintf('The next tag will be: <options=bold>%s</>', $nextTag));
-
-            $changelog = $gitWrapper->parseRelevantCommits($latestTag, $nextTag);
-            $io->section('Generated changelog');
-
-            $dumper = new MarkdownChangelogDumper();
-            $io->write($dumper->dump($changelog));
-
-            $helper = new QuestionHelper();
-            $question = new ConfirmationQuestion('Do you confirm this action (y/n) ? ', false);
-
-            $io->warning(sprintf('This will write the changelog to the file "%s" in the current directory. A new git tag "%s" will also be created.', $path, $nextTag));
-            if (!$helper->ask($input, $output, $question)) {
-                return Command::SUCCESS;
-            }
-
-            $dumper->dumpToFile($changelog, $path, $writingMode);
-            $io->success(sprintf('The changelog has been written to "%s"', $path));
+            return static::init($input, $output);
         } catch (\Throwable $throwable) {
-            $io->error($throwable->getMessage());
+            static::$io->error($throwable->getMessage());
 
             throw $throwable;
         }
+    }
 
-        return 0;
+    private static function newRelease(InputInterface $input, OutputInterface $output): int
+    {
+        $releaseType = $input->getArgument('release type');
+
+        if (null === $releaseType || null === $release = ReleaseType::tryFrom($releaseType)) {
+            throw new \InvalidArgumentException(sprintf('Expected release type to be provided and one of "major", "minor", or "patch".'));
+        }
+
+        if (null === $writingMode = WritingMode::tryFrom($input->getOption('mode'))) {
+            throw new \InvalidArgumentException(sprintf('Expected one of "prepend", "append", or "overwrite", but got "%s".', $input->getOption('mode')));
+        }
+
+        $path = $input->getOption('path');
+
+        $latestTag = static::$gitWrapper->getLatestTag();
+        $nextTag = $latestTag->next($release);
+
+        static::$io->section(sprintf('Creating a new %s release', $release->value));
+        static::$io->comment(sprintf('The latest tag is: <options=bold>%s</>', $latestTag));
+        static::$io->comment(sprintf('The next tag will be: <options=bold>%s</>', $nextTag));
+
+        $changelog = static::$gitWrapper->parseRelevantCommits($latestTag, $nextTag);
+        static::$io->section('Generated changelog');
+
+        $dumper = new MarkdownChangelogDumper();
+        static::$io->write($dumper->dump($changelog));
+
+        $helper = new QuestionHelper();
+        $question = new ConfirmationQuestion('Do you confirm this action (y/n) ? ', false);
+
+        static::$io->warning(sprintf('This will write the changelog to the file "%s" in the current directory. A new git tag "%s" will also be created.', $path, $nextTag));
+        if (!$helper->ask($input, $output, $question)) {
+            return Command::INVALID;
+        }
+
+        $dumper->dumpToFile($changelog, $path, $writingMode);
+        static::$io->success(sprintf('The changelog has been written to "%s"', $path));
+
+        return Command::SUCCESS;
+    }
+
+    private static function init(InputInterface $input, OutputInterface $output): int
+    {
+        $path = $input->getOption('path');
+
+        $questionHelper = new QuestionHelper();
+        $question = new Question("\nWhat is the first version of your project? ", '0.1.0');
+        $question->setValidator(function (string $answer): Semver {
+            try {
+                return Semver::fromString($answer);
+            } catch (\Throwable) {
+                throw new \RuntimeException('The version must follow the SemVer format.');
+            }
+        });
+
+        $firstVersion = $questionHelper->ask($input, $output, $question);
+
+        $dumper = new MarkdownChangelogDumper();
+        $dumper->init($path, $firstVersion);
+        static::$io->success(sprintf('The changelog has been initialized in "%s"', $path));
+
+        return Command::SUCCESS;
     }
 }
