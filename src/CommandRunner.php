@@ -29,7 +29,7 @@ class CommandRunner implements CommandRunnerInterface
         $process->run();
 
         if (!$process->isSuccessful()) {
-            throw new \RuntimeException();
+            throw new \RuntimeException($process->getErrorOutput());
         }
 
         return $process->getOutput();

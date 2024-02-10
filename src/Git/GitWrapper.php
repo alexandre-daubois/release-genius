@@ -133,7 +133,8 @@ final class GitWrapper
      */
     public function createTag(Semver $version): void
     {
-        $this->commandRunner->run(sprintf('%s tag -a %s -m "chore(release): %s"', $this->executable, $version, $version));
+        $this->commandRunner->run(sprintf('%s commit --allow-empty -m "chore(release): %s"', $this->executable, $version));
+        $this->commandRunner->run(sprintf('%s tag -a %s -m "%s"', $this->executable, $version, $version));
     }
 
     /**
