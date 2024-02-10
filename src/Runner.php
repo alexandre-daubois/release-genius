@@ -16,7 +16,6 @@ use ConventionalVersion\Git\Model\Semver;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
@@ -25,7 +24,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 /**
  * This class is the entry point of the application.
  */
-class Runner
+final class Runner
 {
     private static GitWrapper $gitWrapper;
     private static SymfonyStyle $io;
@@ -59,7 +58,7 @@ class Runner
         $releaseType = $input->getArgument('release type');
 
         if (null === $releaseType || null === $release = ReleaseType::tryFrom($releaseType)) {
-            throw new \InvalidArgumentException(sprintf('Expected release type to be provided and one of "major", "minor", or "patch".'));
+            throw new \InvalidArgumentException('Expected release type to be provided and one of "major", "minor", or "patch".');
         }
 
         if (null === $writingMode = WritingMode::tryFrom($input->getOption('mode'))) {

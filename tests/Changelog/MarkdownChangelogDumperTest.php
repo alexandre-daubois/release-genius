@@ -161,7 +161,6 @@ MARKDOWN;
         unlink($changelogFilePath);
     }
 
-
     private function createSampleChangelog(): Changelog
     {
         $changelog = new Changelog(Semver::fromString('1.0.0'), Semver::fromString('2.0.0'));
