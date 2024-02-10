@@ -56,6 +56,9 @@ This will update the `CHANGELOG.md` file and create a new tag. The tag will **no
 be  pushed to the remote repository. This is something you need to do manually in order
 to ensure you're happy with the changes and the new version.
 
+If a `package.json` file exists in the root of your project, the version number
+will be updated **in this file as well**.
+
 ### Generate a changelog
 
 The changelog is generated thanks to your commit messages. All commits from
