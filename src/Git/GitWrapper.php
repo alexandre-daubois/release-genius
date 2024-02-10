@@ -92,6 +92,10 @@ final class GitWrapper
         return new Semver((int) $matches[1], (int) $matches[2], (int) $matches[3], 'v' === $result[0]);
     }
 
+    /**
+     * Get the relevant commits between the last tag and the current HEAD.
+     * This is what we use to generate the changelog.
+     */
     public function parseRelevantCommits(Semver $lastTag, Semver $nextTag): Changelog
     {
         // todo remove
