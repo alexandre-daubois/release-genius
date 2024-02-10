@@ -15,7 +15,7 @@ class RunnerTest extends TestCase
     public function testInvalidReleaseTypeThrows(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Expected one of "major", "minor", or "patch", but got "invalid".');
+        $this->expectExceptionMessage('Expected release type to be provided and one of "major", "minor", or "patch"');
 
         $input = $this->createMock(InputInterface::class);
         $input->method('getArgument')->willReturn('invalid');

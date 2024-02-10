@@ -65,6 +65,9 @@ class MarkdownChangelogDumper implements ChangelogDumperInterface, FileChangelog
         };
     }
 
+    /**
+     * Initializes a new changelog file with the given version without any commits.
+     */
     public function init(string $changelogFilePath, Semver $firstVersion): void
     {
         $changelogFile = new \SplFileObject($changelogFilePath, 'w+');
