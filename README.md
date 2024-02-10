@@ -13,6 +13,16 @@ Conventional Version
 
 That's it!
 
+## Why this package?
+
+This package is a simple tool to help you manage your changelog and versioning.
+It uses the [Conventional Commits](https://www.conventionalcommits.org/) standard
+to generate the changelog. This standard is widely used in the open-source
+community and is a great way to ensure that your commit messages are
+understandable and easy to parse.
+
+Unlike [this package](https://github.com/marcocesarato/php-conventional-changelog), this one is under **the MIT license**. This licence is more permissive than the GPL-3.0 licence. This can be a pain point for some projects and it the main motivation for creating this package.
+
 ## Installation
 
 ```bash
