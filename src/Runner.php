@@ -124,7 +124,7 @@ final class Runner
         Runner::$io->success(sprintf('The tag "%s" has been created', $firstVersion));
 
         Runner::$io->note("Don't forget to push the tag to the remote repository with the following command:");
-        Runner::$io->writeln(sprintf('  <options=bold>git push origin %s</>', $firstVersion));
+        Runner::$io->writeln('  <options=bold>git push origin && git push origin --tags</>');
 
         return Command::SUCCESS;
     }

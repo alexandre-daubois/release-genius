@@ -98,9 +98,6 @@ final class GitWrapper
      */
     public function parseRelevantCommits(Semver $lastTag, Semver $nextTag): Changelog
     {
-        // todo remove
-        $lastTag = new Semver(3, 142, 0, true);
-
         try {
             $result = $this->commandRunner->run(sprintf('%s log %s..HEAD --oneline', $this->executable, $lastTag));
         } catch (\Throwable) {
@@ -133,6 +130,11 @@ final class GitWrapper
      */
     public function createTag(Semver $version): void
     {
+        $existingTags = $this->commandRunner->run(sprintf('%s tag --list', $this->executable));
+        if (str_contains($existingTags, $version)) {
+            throw new \RuntimeException(sprintf('The tag "%s" already exists.', $version));
+        }
+
         $this->commandRunner->run(sprintf('%s commit --allow-empty -m "chore(release): %s"', $this->executable, $version));
         $this->commandRunner->run(sprintf('%s tag -a %s -m "%s"', $this->executable, $version, $version));
     }
