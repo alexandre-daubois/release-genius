@@ -91,3 +91,24 @@ added at the beginning of the file. You can change this behavior by using the
 ```bash
 vendor/bin/conventional-version minor --mode=append
 ```
+
+### Manage remotes
+
+This package will do its best to guess the remote repository URL. By default, it tries to find
+a remote called `origin`.
+If it fails, you
+can use the `--remote` option to specify the remote repository URL.
+
+```bash
+vendor/bin/conventional-version minor --remote=upstream
+```
+
+This will allow to generate a changelog with the correct links to the commits and versions comparison.
+
+In case you don't use a guessable remote URL (because your hosting a private instance of Gitlab, for example), you can use the `--remote-type` option to specify the type of your remote repository. The available types are `github`, `gitlab`.
+
+```bash
+vendor/bin/conventional-version minor --remote-type=gitlab
+```
+
+Specifying the type will help generate the good URL format, with your remote URL. The remote type **always** takes precedence over the automatic remote URL guessing.

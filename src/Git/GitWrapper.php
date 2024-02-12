@@ -100,8 +100,8 @@ final class GitWrapper
     {
         try {
             $result = $this->commandRunner->run(sprintf('%s log %s..HEAD --oneline', $this->executable, $lastTag));
-        } catch (\Throwable) {
-            throw new \RuntimeException('Could not get the commit messages from the repository.');
+        } catch (\Throwable $e) {
+            throw new \RuntimeException('Could not get the commit messages from the repository: '.$e->getMessage());
         }
 
         $rawCommits = explode(\PHP_EOL, trim($result));
@@ -128,15 +128,27 @@ final class GitWrapper
      *
      * @throws \RuntimeException
      */
-    public function createTag(Semver $version): void
+    public function createTag(Semver $version, string $changeLogPath): void
     {
         $existingTags = $this->commandRunner->run(sprintf('%s tag --list', $this->executable));
         if (str_contains($existingTags, $version)) {
             throw new \RuntimeException(sprintf('The tag "%s" already exists.', $version));
         }
 
+        $this->commandRunner->run(sprintf('%s add %s', $this->executable, $changeLogPath));
         $this->commandRunner->run(sprintf('%s commit --allow-empty -m "chore(release): %s"', $this->executable, $version));
         $this->commandRunner->run(sprintf('%s tag -a %s -m "%s"', $this->executable, $version, $version));
+    }
+
+    /**
+     * This method is used to get the URL of a remote. It does so by running the
+     * following command:
+     *
+     *  git remote get-url <remote>
+     */
+    public function getRemoteUrl(string $remote): string
+    {
+        return trim($this->commandRunner->run(sprintf('%s remote get-url %s', $this->executable, $remote)));
     }
 
     /**

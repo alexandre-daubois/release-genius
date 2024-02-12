@@ -60,6 +60,8 @@ require __DIR__.'/vendor/autoload.php';
     ->addOption('path', 'f', InputOption::VALUE_REQUIRED, 'The file to write the changelog to', 'CHANGELOG.md')
     ->addOption('mode', 'm', InputOption::VALUE_REQUIRED, 'The writing mode to use when writing the changelog to a file, between prepend, append and overwrite', 'prepend')
     ->addOption('init', 'i', InputOption::VALUE_NONE, 'Initialize the changelog file and create a new git tag')
+    ->addOption('remote', 'r', InputOption::VALUE_REQUIRED, 'The remote to push the tag to; This is also used to generate URLs in the Changelog (use "none" if you don\'t use a remote)', 'origin')
+    ->addOption('remote-type', null, InputOption::VALUE_REQUIRED, 'The type of remote to use; This is used to generate URLs in the Changelog ("github" or "gitlab")')
     ->setCode(function (InputInterface $input, OutputInterface $output): int {
         try {
             return Runner::run($input, $output);

@@ -13,6 +13,8 @@ use ConventionalVersion\Changelog\MarkdownChangelogDumper;
 use ConventionalVersion\Changelog\WritingMode;
 use ConventionalVersion\Git\GitWrapper;
 use ConventionalVersion\Git\Model\Semver;
+use ConventionalVersion\Git\RemoteAdapter\EmptyRemoteAdapter;
+use ConventionalVersion\Git\RemoteAdapterGuesser;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
@@ -34,20 +36,20 @@ final class Runner
      */
     public static function run(InputInterface $input, OutputInterface $output): int
     {
-        Runner::$io = new SymfonyStyle($input, $output);
-        Runner::$gitWrapper = new GitWrapper(new CommandRunner());
+        self::$io = new SymfonyStyle($input, $output);
+        self::$gitWrapper = new GitWrapper(new CommandRunner());
 
         try {
-            Runner::$io->section('Checking requirements');
-            Runner::$gitWrapper->checkRequirements(Runner::$io);
+            self::$io->section('Checking requirements');
+            self::$gitWrapper->checkRequirements(self::$io);
 
             if (!$input->getOption('init')) {
-                return Runner::newRelease($input, $output);
+                return self::newRelease($input, $output);
             }
 
-            return Runner::init($input, $output);
+            return self::init($input, $output);
         } catch (\Throwable $throwable) {
-            Runner::$io->error($throwable->getMessage());
+            self::$io->error($throwable->getMessage());
 
             throw $throwable;
         }
@@ -67,35 +69,45 @@ final class Runner
 
         $path = $input->getOption('path');
 
-        $latestTag = Runner::$gitWrapper->getLatestTag();
+        $latestTag = self::$gitWrapper->getLatestTag();
         $nextTag = $latestTag->next($release);
 
-        Runner::$io->section(sprintf('Creating a new %s release', $release->value));
-        Runner::$io->comment(sprintf('The latest tag is: <options=bold>%s</>', $latestTag));
-        Runner::$io->comment(sprintf('The next tag will be: <options=bold>%s</>', $nextTag));
+        self::$io->section(sprintf('Creating a new %s release', $release->value));
+        self::$io->comment(sprintf('The latest tag is: <options=bold>%s</>', $latestTag));
+        self::$io->comment(sprintf('The next tag will be: <options=bold>%s</>', $nextTag));
 
-        $changelog = Runner::$gitWrapper->parseRelevantCommits($latestTag, $nextTag);
-        Runner::$io->section('Generated changelog');
+        $changelog = self::$gitWrapper->parseRelevantCommits($latestTag, $nextTag);
 
-        $dumper = new MarkdownChangelogDumper();
-        Runner::$io->write($dumper->dump($changelog));
+        if ('none' === $input->getOption('remote')) {
+            $remoteAdapter = new EmptyRemoteAdapter();
+        } else {
+            $remoteAdapter = RemoteAdapterGuesser::guess(
+                self::$gitWrapper->getRemoteUrl($input->getOption('remote')),
+                $input->getOption('remote-type'),
+            );
+        }
+
+        self::$io->section('Generated changelog');
+
+        $dumper = new MarkdownChangelogDumper($remoteAdapter);
+        self::$io->write($dumper->dump($changelog));
 
         $helper = new QuestionHelper();
         $question = new ConfirmationQuestion('Do you confirm this action (y/n) ? ', false);
 
-        Runner::$io->warning(sprintf('This will write the changelog to the file "%s" in the current directory. A new git tag "%s" will also be created.', $path, $nextTag));
+        self::$io->warning(sprintf('This will write the changelog to the file "%s" in the current directory. A new git tag "%s" will also be created.', $path, $nextTag));
         if (!$helper->ask($input, $output, $question)) {
             return Command::INVALID;
         }
 
         $dumper->dumpToFile($changelog, $path, $writingMode);
-        Runner::$io->success(sprintf('The changelog has been written to "%s"', $path));
+        self::$io->success(sprintf('The changelog has been written to "%s"', $path));
 
-        Runner::$gitWrapper->createTag($nextTag);
-        Runner::$io->success(sprintf('The tag "%s" has been created', $nextTag));
+        self::$gitWrapper->createTag($nextTag, $path);
+        self::$io->success(sprintf('The tag "%s" has been created', $nextTag));
 
-        Runner::$io->info("Don't forget to push the tag to the remote repository with the following command:");
-        Runner::$io->writeln(sprintf('  <options=bold>git push origin %s</>', $nextTag));
+        self::$io->info("Don't forget to push the tag to the remote repository with the following command:");
+        self::$io->writeln('  <options=bold>git push && git push --tags</>');
 
         return Command::SUCCESS;
     }
@@ -116,15 +128,15 @@ final class Runner
 
         $firstVersion = $questionHelper->ask($input, $output, $question);
 
-        $dumper = new MarkdownChangelogDumper();
+        $dumper = new MarkdownChangelogDumper(new EmptyRemoteAdapter());
         $dumper->init($path, $firstVersion);
-        Runner::$gitWrapper->createTag($firstVersion);
+        self::$gitWrapper->createTag($firstVersion, $path);
 
-        Runner::$io->success(sprintf('The changelog has been initialized in "%s"', $path));
-        Runner::$io->success(sprintf('The tag "%s" has been created', $firstVersion));
+        self::$io->success(sprintf('The changelog has been initialized in "%s"', $path));
+        self::$io->success(sprintf('The tag "%s" has been created', $firstVersion));
 
-        Runner::$io->note("Don't forget to push the tag to the remote repository with the following command:");
-        Runner::$io->writeln('  <options=bold>git push origin && git push origin --tags</>');
+        self::$io->note("Don't forget to push the tag to the remote repository with the following command:");
+        self::$io->writeln('  <options=bold>git push origin && git push origin --tags</>');
 
         return Command::SUCCESS;
     }

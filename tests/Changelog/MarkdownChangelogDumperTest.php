@@ -8,6 +8,7 @@ use ConventionalVersion\Changelog\WritingMode;
 use ConventionalVersion\Git\Model\Commit;
 use ConventionalVersion\Git\Model\RawCommit;
 use ConventionalVersion\Git\Model\Semver;
+use ConventionalVersion\Git\RemoteAdapter\EmptyRemoteAdapter;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Clock\Clock;
@@ -24,14 +25,33 @@ class MarkdownChangelogDumperTest extends TestCase
     public function testDump(): void
     {
         $changelog = $this->createSampleChangelog();
-        $dumper = new MarkdownChangelogDumper();
+        $dumper = new MarkdownChangelogDumper(new EmptyRemoteAdapter());
 
         $expected = <<<MARKDOWN
 ## 2.0.0 (2024-01-01)
 
  * fix(bug): Fix the bug (hash)
  * feat(feature): Add the feature (hash)
- * hash This is a raw commit
+ * This is a raw commit (hash)
+
+MARKDOWN;
+
+        $this->assertSame($expected, $dumper->dump($changelog));
+    }
+
+    public function testDumpTrimsPrefix(): void
+    {
+        $changelog = $this->createSampleChangelog();
+        $changelog->toVersion = Semver::fromString('v2.0.0');
+
+        $dumper = new MarkdownChangelogDumper(new EmptyRemoteAdapter());
+
+        $expected = <<<MARKDOWN
+## 2.0.0 (2024-01-01)
+
+ * fix(bug): Fix the bug (hash)
+ * feat(feature): Add the feature (hash)
+ * This is a raw commit (hash)
 
 MARKDOWN;
 
@@ -41,7 +61,7 @@ MARKDOWN;
     public function testDumpToFilePrepend(): void
     {
         $changelog = $this->createSampleChangelog();
-        $dumper = new MarkdownChangelogDumper();
+        $dumper = new MarkdownChangelogDumper(new EmptyRemoteAdapter());
 
         $changelogFilePath = __DIR__.'/../sandbox/'.__METHOD__.'.md';
         file_put_contents($changelogFilePath, "Changelog\n=========\n\n## v1.2.3\n\n * Some test commit\n");
@@ -54,7 +74,7 @@ Changelog
 
  * fix(bug): Fix the bug (hash)
  * feat(feature): Add the feature (hash)
- * hash This is a raw commit
+ * This is a raw commit (hash)
 
 ## v1.2.3
 
@@ -73,7 +93,7 @@ MARKDOWN;
     public function testDumpToFilePrependWorksWithUrlizedTitle(): void
     {
         $changelog = $this->createSampleChangelog();
-        $dumper = new MarkdownChangelogDumper();
+        $dumper = new MarkdownChangelogDumper(new EmptyRemoteAdapter());
 
         $changelogFilePath = __DIR__.'/../sandbox/'.__METHOD__.'.md';
         file_put_contents($changelogFilePath, <<<MARKDOWN
@@ -94,7 +114,7 @@ Changelog
 
  * fix(bug): Fix the bug (hash)
  * feat(feature): Add the feature (hash)
- * hash This is a raw commit
+ * This is a raw commit (hash)
 
 ## [v1.2.3](https://example.com)
 
@@ -113,7 +133,7 @@ MARKDOWN;
     public function testDumpToFilePrependOnInvalidExistingFile(): void
     {
         $changelog = $this->createSampleChangelog();
-        $dumper = new MarkdownChangelogDumper();
+        $dumper = new MarkdownChangelogDumper(new EmptyRemoteAdapter());
 
         $changelogFilePath = __DIR__.'/../sandbox/'.__METHOD__.'.md';
         file_put_contents($changelogFilePath, 'Some invalid content');
@@ -127,7 +147,7 @@ MARKDOWN;
     public function testDumpToFileAppend(): void
     {
         $changelog = $this->createSampleChangelog();
-        $dumper = new MarkdownChangelogDumper();
+        $dumper = new MarkdownChangelogDumper(new EmptyRemoteAdapter());
 
         $changelogFilePath = __DIR__.'/../sandbox/'.__METHOD__.'.md';
         file_put_contents($changelogFilePath, "Changelog\n=========\n\n## v1.2.3\n\n * Some test commit\n");
@@ -144,7 +164,7 @@ Changelog
 
  * fix(bug): Fix the bug (hash)
  * feat(feature): Add the feature (hash)
- * hash This is a raw commit
+ * This is a raw commit (hash)
 
 MARKDOWN;
 
@@ -159,7 +179,7 @@ MARKDOWN;
     public function testDumpToFileOverwrite(): void
     {
         $changelog = $this->createSampleChangelog();
-        $dumper = new MarkdownChangelogDumper();
+        $dumper = new MarkdownChangelogDumper(new EmptyRemoteAdapter());
 
         $changelogFilePath = __DIR__.'/../sandbox/'.__METHOD__.'.md';
         file_put_contents($changelogFilePath, "Changelog\n=========\n\n## v1.2.3\n\n * Some test commit\n");
@@ -169,7 +189,7 @@ MARKDOWN;
 
  * fix(bug): Fix the bug (hash)
  * feat(feature): Add the feature (hash)
- * hash This is a raw commit
+ * This is a raw commit (hash)
 
 MARKDOWN;
 
@@ -183,7 +203,7 @@ MARKDOWN;
 
     public function testInit(): void
     {
-        $dumper = new MarkdownChangelogDumper();
+        $dumper = new MarkdownChangelogDumper(new EmptyRemoteAdapter());
 
         $changelogFilePath = __DIR__.'/../sandbox/'.__METHOD__.'.md';
         $firstVersion = Semver::fromString('1.0.0');
@@ -214,7 +234,7 @@ MARKDOWN;
         $changelog->commits = [
             new Commit('hash', 'fix', 'bug', 'Fix the bug'),
             new Commit('hash', 'feat', 'feature', 'Add the feature'),
-            new RawCommit('hash This is a raw commit'),
+            new RawCommit('hash', 'This is a raw commit'),
         ];
 
         return $changelog;

@@ -12,10 +12,15 @@ namespace ConventionalVersion\Changelog;
 use ConventionalVersion\Git\Model\Commit;
 use ConventionalVersion\Git\Model\RawCommit;
 use ConventionalVersion\Git\Model\Semver;
+use ConventionalVersion\Git\RemoteAdapter\RemoteAdapterInterface;
 use Symfony\Component\Clock\DatePoint;
 
-class MarkdownChangelogDumper implements ChangelogDumperInterface, FileChangelogDumperInterface
+readonly class MarkdownChangelogDumper implements ChangelogDumperInterface, FileChangelogDumperInterface
 {
+    public function __construct(private RemoteAdapterInterface $remoteAdapter)
+    {
+    }
+
     /**
      * Dumps the changelog to a string, in the Markdown format.
      *
@@ -23,12 +28,18 @@ class MarkdownChangelogDumper implements ChangelogDumperInterface, FileChangelog
      */
     public function dump(Changelog $changelog): string
     {
-        $output = sprintf('## %s (%s)', $changelog->toVersion, (new DatePoint())->format('Y-m-d'))."\n\n";
+        if (null !== $compare = $this->remoteAdapter->getCompareUrl($changelog->fromVersion, $changelog->toVersion)) {
+            $output = sprintf('## [%s](%s) (%s)', ltrim($changelog->toVersion, 'v'), $compare, (new DatePoint())->format('Y-m-d'));
+        } else {
+            $output = sprintf('## %s (%s)', ltrim($changelog->toVersion, 'v'), (new DatePoint())->format('Y-m-d'));
+        }
+
+        $output .= "\n\n";
 
         /** @var RawCommit|Commit $commit */
         foreach ($changelog->commits as $commit) {
-            if ($commit instanceof RawCommit) {
-                $output .= ' * '.$commit->rawCommit."\n";
+            if (null !== $hashUrl = $this->remoteAdapter->getCommitUrl($commit)) {
+                $output .= sprintf(' * %s [%s](%s)', $commit->message, $hashUrl, $commit->hash)."\n";
 
                 continue;
             }

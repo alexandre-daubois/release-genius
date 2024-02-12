@@ -14,17 +14,27 @@ namespace ConventionalVersion\Git\Model;
  */
 class RawCommit implements CommitInterface
 {
-    public function __construct(public string $rawCommit)
-    {
+    public function __construct(
+        public string $hash,
+        public string $message
+    ) {
     }
 
     public function __toString(): string
     {
-        return $this->rawCommit;
+        return $this->message;
     }
 
     public static function fromString(string $commit): CommitInterface
     {
-        return new self($commit);
+        $commitSha = substr($commit, 0, 10);
+        $commit = substr($commit, 11);
+
+        return new self($commitSha, $commit);
+    }
+
+    public function getHash(): string
+    {
+        return $this->hash;
     }
 }

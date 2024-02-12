@@ -47,12 +47,17 @@ class Commit implements CommitInterface
         $commitSha = substr($commit, 0, 10);
         $commit = substr($commit, 11);
 
-        preg_match('/(?<type>\w+)(\((?<scope>.+?)\))?(?<breaking>\!)?(\:)?\s(?<description>[^\r\n]+)/', $commit, $matches);
+        preg_match('/(?<type>\w+)(\((?<scope>.+?)\))?(?<breaking>!)?(:)?\s(?<description>[^\r\n]+)/', $commit, $matches);
 
         if (empty($matches)) {
             throw new \InvalidArgumentException('Invalid commit message');
         }
 
         return new self($commitSha, $matches['type'], $matches['scope'], $matches['description'], '!' === $matches['breaking']);
+    }
+
+    public function getHash(): string
+    {
+        return $this->hash;
     }
 }
