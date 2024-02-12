@@ -139,7 +139,7 @@ MARKDOWN);
         preg_match('/^##\s(\[)?(v)?\d+\.\d+\.\d+/m', $fileContent, $matches, \PREG_OFFSET_CAPTURE);
 
         if (empty($matches)) {
-            throw new \RuntimeException('Could not find a release entry in the change log file. Please add a title like `## v1.0.0` to the file to be able to prepend something.');
+            throw new \RuntimeException('Could not find a release entry in the change log file. Please add a title like `## v1.0.0` to the file to be able to prepend something. Alternatively, you can run the command with the `--init` option to create a new changelog file.');
         }
 
         $positionToInsert = $matches[0][1];
