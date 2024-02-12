@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1](https://github.com/alexandre-daubois/release-genius/compare/0.3.0...0.3.1) (2024-02-12)
+
+### Others
+
+ * Remove "version" directive from composer.json [https://github.com/alexandre-daubois/release-genius/commit/68a2151c4e](68a2151c4e)
+
+
 ## [0.3.0](https://github.com/alexandre-daubois/release-genius/compare/0.2.1...0.3.0) (2024-02-12)
 
 ### Others
