@@ -39,6 +39,21 @@ MARKDOWN;
         $this->assertSame($expected, $dumper->dump($changelog));
     }
 
+    public function testDumpEmptyChangelog(): void
+    {
+        $changelog = new Changelog(Semver::fromString('1.0.0'), Semver::fromString('2.0.0'));
+        $dumper = new MarkdownChangelogDumper(new EmptyRemoteAdapter());
+
+        $expected = <<<MARKDOWN
+## 2.0.0 (2024-01-01)
+
+ * _(empty release)_
+
+MARKDOWN;
+
+        $this->assertSame($expected, $dumper->dump($changelog));
+    }
+
     public function testDumpTrimsPrefix(): void
     {
         $changelog = $this->createSampleChangelog();

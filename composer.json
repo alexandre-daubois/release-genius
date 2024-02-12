@@ -42,8 +42,8 @@
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.49",
-        "phpstan/phpstan": "^1.10",
-        "phpunit/phpunit": "^10.5",
-        "symfony/var-dumper": "^7.0"
+        "phpstan/phpstan": "^1.10.57",
+        "phpunit/phpunit": "^10.5.10",
+        "symfony/var-dumper": "^7.0.3"
     }
 }

@@ -108,6 +108,11 @@ final class GitWrapper
         $changeLog = new Changelog($lastTag, $nextTag);
 
         foreach ($rawCommits as $rawCommit) {
+            if ('' === $rawCommit) {
+                // skip empty lines that may happen when parsing the command output
+                continue;
+            }
+
             try {
                 $commit = Commit::fromString($rawCommit);
             } catch (\Throwable) {

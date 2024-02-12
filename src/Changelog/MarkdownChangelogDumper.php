@@ -36,7 +36,12 @@ readonly class MarkdownChangelogDumper implements ChangelogDumperInterface, File
 
         $output .= "\n\n";
 
-        /** @var RawCommit|Commit $commit */
+        if (0 === count($changelog->commits)) {
+            $output .= " * _(empty release)_\n";
+
+            return $output;
+        }
+
         foreach ($changelog->commits as $commit) {
             if (null !== $hashUrl = $this->remoteAdapter->getCommitUrl($commit)) {
                 $output .= sprintf(' * %s [%s](%s)', $commit->message, $hashUrl, $commit->hash)."\n";
