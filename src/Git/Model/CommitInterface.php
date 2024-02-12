@@ -9,4 +9,6 @@ interface CommitInterface
     public static function fromString(string $commit): self;
 
     public function getHash(): string;
+
+    public function getMessage(): string;
 }

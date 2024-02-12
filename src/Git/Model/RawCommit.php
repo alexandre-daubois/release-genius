@@ -37,4 +37,9 @@ class RawCommit implements CommitInterface
     {
         return $this->hash;
     }
+
+    public function getMessage(): string
+    {
+        return $this->message;
+    }
 }

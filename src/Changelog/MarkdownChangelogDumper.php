@@ -44,12 +44,12 @@ readonly class MarkdownChangelogDumper implements ChangelogDumperInterface, File
 
         foreach ($changelog->commits as $commit) {
             if (null !== $hashUrl = $this->remoteAdapter->getCommitUrl($commit)) {
-                $output .= sprintf(' * %s [%s](%s)', $commit->message, $hashUrl, $commit->hash)."\n";
+                $output .= sprintf(' * %s [%s](%s)', $commit->getMessage(), $hashUrl, $commit->getHash())."\n";
 
                 continue;
             }
 
-            $output .= sprintf(' * %s (%s)', $commit, $commit->hash)."\n";
+            $output .= sprintf(' * %s (%s)', $commit, $commit->getHash())."\n";
         }
 
         return $output;

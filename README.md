@@ -1,7 +1,7 @@
-Conventional Version
-====================
+Release Genius
+==============
 
-[![PHPUnit](https://github.com/alexandre-daubois/conventional-version/actions/workflows/php.yaml/badge.svg)](https://github.com/alexandre-daubois/conventional-version/actions/workflows/php.yaml)
+[![PHPUnit](https://github.com/alexandre-daubois/release-genius/actions/workflows/php.yaml/badge.svg)](https://github.com/alexandre-daubois/release-genius/actions/workflows/php.yaml)
 
 ![Conventional version screenshot](asset/conv-vers.png)
 
@@ -26,7 +26,7 @@ Unlike [this package](https://github.com/marcocesarato/php-conventional-changelo
 ## Installation
 
 ```bash
-composer require alexandre-daubois/conventional-version
+composer require alexandre-daubois/release-genius
 ```
 
 ## Usage
@@ -38,7 +38,7 @@ required when you don't have any tag in your repository and no changelog file
 exists. You can do this by running the following command:
 
 ```bash
-vendor/bin/conventional-version --init
+vendor/bin/release-genius --init
 ```
 
 This will create a new file called `CHANGELOG.md` in the root of your project.
@@ -53,13 +53,13 @@ running the following command:
 
 ```bash
 # Upgrade the version to 1.0.1
-vendor/bin/conventional-version patch
+vendor/bin/release-genius patch
 
 # Upgrade the version to 1.1.0
-vendor/bin/conventional-version minor
+vendor/bin/release-genius minor
 
 # Upgrade the version to 2.0.0
-vendor/bin/conventional-version major
+vendor/bin/release-genius major
 ```
 
 This will update the `CHANGELOG.md` file and create a new tag. The tag will **not**
@@ -80,7 +80,7 @@ option. By default, the changelog file is created in the root of your project
 and is called `CHANGELOG.md`.
 
 ```bash
-vendor/bin/conventional-version minor --path=docs/CHANGELOG.md
+vendor/bin/release-genius minor --path=docs/CHANGELOG.md
 ```
 
 You can also choose the way to changelog file is generated. By default, the
@@ -89,7 +89,7 @@ added at the beginning of the file. You can change this behavior by using the
 `--mode` option. The available modes are `append`, `prepend` and `overwrite`.
 
 ```bash
-vendor/bin/conventional-version minor --mode=append
+vendor/bin/release-genius minor --mode=append
 ```
 
 ### Manage remotes
@@ -100,7 +100,7 @@ If it fails, you
 can use the `--remote` option to specify the remote repository URL.
 
 ```bash
-vendor/bin/conventional-version minor --remote=upstream
+vendor/bin/release-genius minor --remote=upstream
 ```
 
 This will allow to generate a changelog with the correct links to the commits and versions comparison.
@@ -108,7 +108,7 @@ This will allow to generate a changelog with the correct links to the commits an
 In case you don't use a guessable remote URL (because your hosting a private instance of Gitlab, for example), you can use the `--remote-type` option to specify the type of your remote repository. The available types are `github`, `gitlab`.
 
 ```bash
-vendor/bin/conventional-version minor --remote-type=gitlab
+vendor/bin/release-genius minor --remote-type=gitlab
 ```
 
 Specifying the type will help generate the good URL format, with your remote URL. The remote type **always** takes precedence over the automatic remote URL guessing.
