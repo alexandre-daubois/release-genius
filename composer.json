@@ -1,7 +1,6 @@
 {
     "name": "alexandre-daubois/release-genius",
     "type": "library",
-    "version": "0.3.0",
     "description": "Generate changelogs and tags from your git history",
     "keywords": ["conventional-changelog", "readme", "generation", "git", "conventional-commit", "commit", "changelog", "history", "tag", "convention", "version", "semver", "semantic"],
     "license": "MIT",
