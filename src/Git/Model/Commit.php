@@ -47,9 +47,9 @@ class Commit implements CommitInterface
         $commitSha = substr($commit, 0, 10);
         $commit = substr($commit, 11);
 
-        preg_match('/(?<type>\w+)(\((?<scope>.+?)\))?(?<breaking>!)?(:)?\s(?<description>[^\r\n]+)/', $commit, $matches);
+        preg_match('/(?<type>\w+)(\((?<scope>.+?)\))?(?<breaking>!)?:\s(?<description>[^\r\n]+)/', $commit, $matches);
 
-        if (empty($matches)) {
+        if (!isset($matches['type'], $matches['description'])) {
             throw new \InvalidArgumentException('Invalid commit message');
         }
 

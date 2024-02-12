@@ -99,7 +99,7 @@ final class GitWrapper
     public function parseRelevantCommits(Semver $lastTag, Semver $nextTag): Changelog
     {
         try {
-            $result = $this->commandRunner->run(sprintf('%s log %s..HEAD --oneline', $this->executable, $lastTag));
+            $result = $this->commandRunner->run(sprintf('%s log %s..HEAD --oneline --abbrev=10', $this->executable, $lastTag));
         } catch (\Throwable $e) {
             throw new \RuntimeException('Could not get the commit messages from the repository: '.$e->getMessage());
         }

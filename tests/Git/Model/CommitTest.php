@@ -75,6 +75,7 @@ class CommitTest extends TestCase
             'no type or message' => ['5786cdac88 (scope):'],
             'no type or scope' => ['5786cdac88 : message'],
             'no type or scope or message' => ['5786cdac88 :'],
+            'no semi colon' => ['5786cdac88 feat(scope) message'],
         ];
     }
 }
