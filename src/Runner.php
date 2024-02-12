@@ -120,6 +120,14 @@ final class Runner
             }
         }
 
+        $skipTagging = $input->getOption('no-commit');
+
+        if ($skipTagging) {
+            self::$io->success('The changelog and vendor files were updated, but no commit or tag was created.');
+
+            return Command::SUCCESS;
+        }
+
         self::$gitWrapper->createTag($nextTag, $path, $skipVendors);
         self::$io->success(sprintf('The tag "%s" has been created', $nextTag));
 

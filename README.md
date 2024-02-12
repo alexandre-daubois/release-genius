@@ -20,7 +20,7 @@ to generate the changelog. This standard is widely used in the open-source
 community and is a great way to ensure that your commit messages are
 understandable and easy to parse.
 
-Unlike [this package](https://github.com/marcocesarato/php-conventional-changelog), this one is under **the MIT license**. This licence is more permissive than the GPL-3.0 licence. This can be a pain point for some projects and it the main motivation for creating this package.
+Unlike [this package](https://github.com/marcocesarato/php-conventional-changelog), this one is under **the MIT license**. This licence is more permissive than the GPL-3.0 licence. This can be a pain point for some projects, and it is the main motivation for creating Release Genius.
 
 ## Installation
 
@@ -29,6 +29,21 @@ composer require alexandre-daubois/release-genius
 ```
 
 ## Usage
+
+### TL;DR
+
+```bash
+# Initialize the package
+vendor/bin/release-genius --init
+
+# Upgrade to the next version (major, minor or patch)
+# CHANGELOG.md, package.json and composer.json will be updated
+vendor/bin/release-genius patch
+git push && git push --tags
+
+# Only update the changelog, composer.json and package.json
+vendor/bin/release-genius patch --no-commit
+```
 
 ### Available options
 
@@ -46,7 +61,7 @@ Options:
   -r, --remote=REMOTE            The remote to push the tag to; This is also used to generate URLs in the Changelog (use "none" if you don't use a remote) [default: "origin"]
       --remote-type=REMOTE-TYPE  The type of remote to use; This is used to generate URLs in the Changelog ("github" or "gitlab")
       --skip-vendors             Skip the update of package.json and composer.json
-
+      --no-commit                Do not create a commit and a tag, only update the changelog and vendor files if any
 ```
 
 ### Initialize and upgrade the version
@@ -84,9 +99,19 @@ This will update the `CHANGELOG.md` file and create a new tag. The tag will **no
 be  pushed to the remote repository. This is something you need to do manually in order
 to ensure you're happy with the changes and the new version.
 
+#### Vendors JSON files
+
 If a `package.json` file exists in the root of your project, the version number
 will be updated **in this file as well** (if present). The same goes for a `composer.json`
 file.
+
+#### Skip the commit and tag creation
+
+If you want to create the tag and commit yourself to be extra careful, you can use the `--no-commit` option. Release Genius will only update the changelog and the vendor JSON files.
+
+```bash
+vendor/bin/release-genius minor --no-commit
+```
 
 ### Generate a changelog
 
