@@ -9,7 +9,7 @@ class VendorsJsonFileUpdater
 {
     public static function update(Semver $semver, string $filename): void
     {
-        $packageJson = file_get_contents($filename);
+        $packageJson = @file_get_contents($filename);
         if (false === $packageJson) {
             throw new VendorFileNotFoundException(sprintf('"%s" not found', $filename));
         }
