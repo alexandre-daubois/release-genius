@@ -95,7 +95,7 @@ final class Runner
         $helper = new QuestionHelper();
         $question = new ConfirmationQuestion('Do you confirm this action (y/n) ? ', false);
 
-        self::$io->warning(sprintf('This will write the changelog to the file "%s" in the current directory. A new git tag "%s" will also be created.', $path, $nextTag));
+        self::$io->warning(sprintf('This will write the changelog to the file "%s" in the current directory. A new git tag "%s" will also be created. If "composer.json" and/or "package.json" files are found, their version number will be updated as well.', $path, $nextTag));
         if (!$helper->ask($input, $output, $question)) {
             return Command::INVALID;
         }
@@ -103,7 +103,24 @@ final class Runner
         $dumper->dumpToFile($changelog, $path, $writingMode);
         self::$io->success(sprintf('The changelog has been written to "%s"', $path));
 
-        self::$gitWrapper->createTag($nextTag, $path);
+        $skipVendors = $input->getOption('skip-vendors');
+        if (file_exists('package.json') && !$skipVendors) {
+            try {
+                VendorsJsonFileUpdater::update($nextTag, 'package.json');
+                self::$io->success('The "package.json" file has been updated');
+            } catch (Exception\VendorFileNotFoundException) {
+            }
+        }
+
+        if (file_exists('composer.json') && !$skipVendors) {
+            try {
+                VendorsJsonFileUpdater::update($nextTag, 'composer.json');
+                self::$io->success('The "composer.json" file has been updated');
+            } catch (Exception\VendorFileNotFoundException) {
+            }
+        }
+
+        self::$gitWrapper->createTag($nextTag, $path, $skipVendors);
         self::$io->success(sprintf('The tag "%s" has been created', $nextTag));
 
         self::$io->info("Don't forget to push the tag to the remote repository with the following command:");
@@ -130,7 +147,7 @@ final class Runner
 
         $dumper = new MarkdownChangelogDumper(new EmptyRemoteAdapter());
         $dumper->init($path, $firstVersion);
-        self::$gitWrapper->createTag($firstVersion, $path);
+        self::$gitWrapper->createTag($firstVersion, $path, false);
 
         self::$io->success(sprintf('The changelog has been initialized in "%s"', $path));
         self::$io->success(sprintf('The tag "%s" has been created', $firstVersion));

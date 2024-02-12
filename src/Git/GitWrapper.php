@@ -133,11 +133,19 @@ final class GitWrapper
      *
      * @throws \RuntimeException
      */
-    public function createTag(Semver $version, string $changeLogPath): void
+    public function createTag(Semver $version, string $changeLogPath, bool $skipVendors): void
     {
         $existingTags = $this->commandRunner->run(sprintf('%s tag --list', $this->executable));
         if (str_contains($existingTags, $version)) {
             throw new \RuntimeException(sprintf('The tag "%s" already exists.', $version));
+        }
+
+        if (file_exists('package.json') && !$skipVendors) {
+            $this->commandRunner->run(sprintf('%s add package.json', $this->executable));
+        }
+
+        if (file_exists('composer.json') && !$skipVendors) {
+            $this->commandRunner->run(sprintf('%s add composer.json', $this->executable));
         }
 
         $this->commandRunner->run(sprintf('%s add %s', $this->executable, $changeLogPath));

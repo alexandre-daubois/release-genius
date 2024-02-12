@@ -8,7 +8,6 @@ Release Genius
 ## Requirements
 
 - PHP 8.2 or higher
-- Composer
 - Git
 
 That's it!
@@ -30,6 +29,25 @@ composer require alexandre-daubois/release-genius
 ```
 
 ## Usage
+
+### Available options
+
+```
+Usage:
+  ./release-genius [options] [--] [<release type>]
+
+Arguments:
+  release type                   The type of release to be generated (major, minor, patch)
+
+Options:
+  -f, --path=PATH                The file to write the changelog to [default: "CHANGELOG.md"]
+  -m, --mode=MODE                The writing mode to use when writing the changelog to a file, between prepend, append and overwrite [default: "prepend"]
+  -i, --init                     Initialize the changelog file and create a new git tag
+  -r, --remote=REMOTE            The remote to push the tag to; This is also used to generate URLs in the Changelog (use "none" if you don't use a remote) [default: "origin"]
+      --remote-type=REMOTE-TYPE  The type of remote to use; This is used to generate URLs in the Changelog ("github" or "gitlab")
+      --skip-vendors             Skip the update of package.json and composer.json
+
+```
 
 ### Initialize and upgrade the version
 
@@ -67,7 +85,8 @@ be  pushed to the remote repository. This is something you need to do manually i
 to ensure you're happy with the changes and the new version.
 
 If a `package.json` file exists in the root of your project, the version number
-will be updated **in this file as well**.
+will be updated **in this file as well** (if present). The same goes for a `composer.json`
+file.
 
 ### Generate a changelog
 
