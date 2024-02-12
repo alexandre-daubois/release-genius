@@ -30,8 +30,20 @@ class MarkdownChangelogDumperTest extends TestCase
         $expected = <<<MARKDOWN
 ## 2.0.0 (2024-01-01)
 
- * fix(bug): Fix the bug (hash)
+### Features
+
  * feat(feature): Add the feature (hash)
+
+### Fixes
+
+ * fix(bug): Fix the bug (hash)
+
+### Misc
+
+ * chore(chore): Some chore commit (hash)
+
+### Others
+
  * This is a raw commit (hash)
 
 MARKDOWN;
@@ -64,8 +76,20 @@ MARKDOWN;
         $expected = <<<MARKDOWN
 ## 2.0.0 (2024-01-01)
 
- * fix(bug): Fix the bug (hash)
+### Features
+
  * feat(feature): Add the feature (hash)
+
+### Fixes
+
+ * fix(bug): Fix the bug (hash)
+
+### Misc
+
+ * chore(chore): Some chore commit (hash)
+
+### Others
+
  * This is a raw commit (hash)
 
 MARKDOWN;
@@ -87,8 +111,20 @@ Changelog
 
 ## 2.0.0 (2024-01-01)
 
- * fix(bug): Fix the bug (hash)
+### Features
+
  * feat(feature): Add the feature (hash)
+
+### Fixes
+
+ * fix(bug): Fix the bug (hash)
+
+### Misc
+
+ * chore(chore): Some chore commit (hash)
+
+### Others
+
  * This is a raw commit (hash)
 
 ## v1.2.3
@@ -127,8 +163,20 @@ Changelog
 
 ## 2.0.0 (2024-01-01)
 
- * fix(bug): Fix the bug (hash)
+### Features
+
  * feat(feature): Add the feature (hash)
+
+### Fixes
+
+ * fix(bug): Fix the bug (hash)
+
+### Misc
+
+ * chore(chore): Some chore commit (hash)
+
+### Others
+
  * This is a raw commit (hash)
 
 ## [v1.2.3](https://example.com)
@@ -177,8 +225,20 @@ Changelog
 
 ## 2.0.0 (2024-01-01)
 
- * fix(bug): Fix the bug (hash)
+### Features
+
  * feat(feature): Add the feature (hash)
+
+### Fixes
+
+ * fix(bug): Fix the bug (hash)
+
+### Misc
+
+ * chore(chore): Some chore commit (hash)
+
+### Others
+
  * This is a raw commit (hash)
 
 MARKDOWN;
@@ -202,8 +262,20 @@ MARKDOWN;
         $expected = <<<MARKDOWN
 ## 2.0.0 (2024-01-01)
 
- * fix(bug): Fix the bug (hash)
+### Features
+
  * feat(feature): Add the feature (hash)
+
+### Fixes
+
+ * fix(bug): Fix the bug (hash)
+
+### Misc
+
+ * chore(chore): Some chore commit (hash)
+
+### Others
+
  * This is a raw commit (hash)
 
 MARKDOWN;
@@ -250,6 +322,7 @@ MARKDOWN;
             new Commit('hash', 'fix', 'bug', 'Fix the bug'),
             new Commit('hash', 'feat', 'feature', 'Add the feature'),
             new RawCommit('hash', 'This is a raw commit'),
+            new Commit('hash', 'chore', 'chore', 'Some chore commit'),
         ];
 
         return $changelog;

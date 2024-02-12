@@ -9,8 +9,7 @@
 
 namespace ConventionalVersion\Changelog;
 
-use ConventionalVersion\Git\Model\Commit;
-use ConventionalVersion\Git\Model\RawCommit;
+use ConventionalVersion\Git\Model\CommitInterface;
 use ConventionalVersion\Git\Model\Semver;
 use ConventionalVersion\Git\RemoteAdapter\RemoteAdapterInterface;
 use Symfony\Component\Clock\DatePoint;
@@ -36,23 +35,45 @@ readonly class MarkdownChangelogDumper implements ChangelogDumperInterface, File
 
         $output .= "\n\n";
 
-        if (0 === count($changelog->commits)) {
+        if (0 === \count($changelog->commits)) {
             $output .= " * _(empty release)_\n";
 
             return $output;
         }
 
-        foreach ($changelog->commits as $commit) {
+        foreach ($changelog->sortedCommits() as $type => $commit) {
+            if (0 === \count($commit)) {
+                continue;
+            }
+
+            $output .= sprintf('### %s', ucfirst($type))."\n\n";
+            $output .= $this->dumpCommits($commit);
+
+            if (array_key_last($changelog->sortedCommits()) !== $type) {
+                $output .= "\n";
+            }
+        }
+
+        return $output;
+    }
+
+    /**
+     * @param array<CommitInterface> $commits
+     */
+    private function dumpCommits(array $commits): string
+    {
+        $output = '';
+        foreach ($commits as $commit) {
             if (null !== $hashUrl = $this->remoteAdapter->getCommitUrl($commit)) {
                 $output .= sprintf(' * %s [%s](%s)', $commit->getMessage(), $hashUrl, $commit->getHash())."\n";
 
                 continue;
             }
 
-            $output .= sprintf(' * %s (%s)', $commit, $commit->getHash())."\n";
+            $output .= sprintf(' * %s (%s)', $commit, $commit->getHash());
         }
 
-        return $output;
+        return $output."\n";
     }
 
     /**
