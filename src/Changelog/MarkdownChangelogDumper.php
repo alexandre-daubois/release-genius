@@ -12,6 +12,7 @@ namespace ConventionalVersion\Changelog;
 use ConventionalVersion\Git\Model\Commit;
 use ConventionalVersion\Git\Model\RawCommit;
 use ConventionalVersion\Git\Model\Semver;
+use Symfony\Component\Clock\DatePoint;
 
 class MarkdownChangelogDumper implements ChangelogDumperInterface, FileChangelogDumperInterface
 {
@@ -22,7 +23,7 @@ class MarkdownChangelogDumper implements ChangelogDumperInterface, FileChangelog
      */
     public function dump(Changelog $changelog): string
     {
-        $output = sprintf('## %s', $changelog->toVersion)."\n\n";
+        $output = sprintf('## %s (%s)', $changelog->toVersion, (new DatePoint())->format('Y-m-d'))."\n\n";
 
         /** @var RawCommit|Commit $commit */
         foreach ($changelog->commits as $commit) {
@@ -70,6 +71,7 @@ class MarkdownChangelogDumper implements ChangelogDumperInterface, FileChangelog
      */
     public function init(string $changelogFilePath, Semver $firstVersion): void
     {
+        $now = (new DatePoint())->format('Y-m-d');
         $changelogFile = new \SplFileObject($changelogFilePath, 'w+');
         $changelogFile->fwrite(<<<MARKDOWN
 # Changelog
@@ -77,7 +79,7 @@ class MarkdownChangelogDumper implements ChangelogDumperInterface, FileChangelog
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## $firstVersion
+## $firstVersion ($now)
 
  * Initial release
 
@@ -95,7 +97,9 @@ MARKDOWN);
             throw new \RuntimeException(sprintf('Could not read the file "%s".', $changelogFilePath));
         }
 
-        preg_match('/^##\s(v)?\d+\.\d+\.\d+$/m', $fileContent, $matches, \PREG_OFFSET_CAPTURE);
+        // this regex will match a title like `## v1.0.0` or `## 1.0.0`
+        // it also supported urlized titles like `## [v1.0.0](...)`
+        preg_match('/^##\s(\[)?(v)?\d+\.\d+\.\d+/m', $fileContent, $matches, \PREG_OFFSET_CAPTURE);
 
         if (empty($matches)) {
             throw new \RuntimeException('Could not find a release entry in the change log file. Please add a title like `## v1.0.0` to the file to be able to prepend something.');

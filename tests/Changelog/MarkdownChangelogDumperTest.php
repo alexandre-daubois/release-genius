@@ -10,17 +10,24 @@ use ConventionalVersion\Git\Model\RawCommit;
 use ConventionalVersion\Git\Model\Semver;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Clock\Clock;
+use Symfony\Component\Clock\MockClock;
 
 #[CoversClass(MarkdownChangelogDumper::class)]
 class MarkdownChangelogDumperTest extends TestCase
 {
+    public static function setUpBeforeClass(): void
+    {
+        Clock::set(new MockClock('2024-01-01 00:00:00'));
+    }
+
     public function testDump(): void
     {
         $changelog = $this->createSampleChangelog();
         $dumper = new MarkdownChangelogDumper();
 
         $expected = <<<MARKDOWN
-## 2.0.0
+## 2.0.0 (2024-01-01)
 
  * fix(bug): Fix the bug (hash)
  * feat(feature): Add the feature (hash)
@@ -43,13 +50,53 @@ MARKDOWN;
 Changelog
 =========
 
-## 2.0.0
+## 2.0.0 (2024-01-01)
 
  * fix(bug): Fix the bug (hash)
  * feat(feature): Add the feature (hash)
  * hash This is a raw commit
 
 ## v1.2.3
+
+ * Some test commit
+
+MARKDOWN;
+
+        $dumper->dumpToFile($changelog, $changelogFilePath);
+
+        $this->assertFileExists($changelogFilePath);
+        $this->assertSame($expected, file_get_contents($changelogFilePath));
+
+        unlink($changelogFilePath);
+    }
+
+    public function testDumpToFilePrependWorksWithUrlizedTitle(): void
+    {
+        $changelog = $this->createSampleChangelog();
+        $dumper = new MarkdownChangelogDumper();
+
+        $changelogFilePath = __DIR__.'/../sandbox/'.__METHOD__.'.md';
+        file_put_contents($changelogFilePath, <<<MARKDOWN
+Changelog
+=========
+
+## [v1.2.3](https://example.com)
+
+ * Some test commit
+
+MARKDOWN);
+
+        $expected = <<<MARKDOWN
+Changelog
+=========
+
+## 2.0.0 (2024-01-01)
+
+ * fix(bug): Fix the bug (hash)
+ * feat(feature): Add the feature (hash)
+ * hash This is a raw commit
+
+## [v1.2.3](https://example.com)
 
  * Some test commit
 
@@ -93,7 +140,7 @@ Changelog
 
  * Some test commit
 
-## 2.0.0
+## 2.0.0 (2024-01-01)
 
  * fix(bug): Fix the bug (hash)
  * feat(feature): Add the feature (hash)
@@ -118,7 +165,7 @@ MARKDOWN;
         file_put_contents($changelogFilePath, "Changelog\n=========\n\n## v1.2.3\n\n * Some test commit\n");
 
         $expected = <<<MARKDOWN
-## 2.0.0
+## 2.0.0 (2024-01-01)
 
  * fix(bug): Fix the bug (hash)
  * feat(feature): Add the feature (hash)
@@ -149,7 +196,7 @@ MARKDOWN;
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 1.0.0
+## 1.0.0 (2024-01-01)
 
  * Initial release
 
