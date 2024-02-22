@@ -50,11 +50,8 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\SingleCommandApplication;
 
-require __DIR__.'/vendor/autoload.php';
-
 (new SingleCommandApplication())
     ->setName('Conventional Version')
-    ->setVersion('0.1')
     ->setDescription('Generate a new release based on the conventional commits')
     ->addArgument('release type', InputArgument::OPTIONAL, 'The type of release to be generated (major, minor, patch)')
     ->addOption('path', 'f', InputOption::VALUE_REQUIRED, 'The file to write the changelog to', 'CHANGELOG.md')
