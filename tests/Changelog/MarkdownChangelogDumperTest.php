@@ -1,6 +1,6 @@
 <?php
 
-namespace Changelog;
+namespace ConventionalVersion\Tests\Changelog;
 
 use ConventionalVersion\Changelog\Changelog;
 use ConventionalVersion\Changelog\MarkdownChangelogDumper;
@@ -45,6 +45,29 @@ class MarkdownChangelogDumperTest extends TestCase
 ### Others
 
  * This is a raw commit (hash)
+
+MARKDOWN;
+
+        $this->assertSame($expected, $dumper->dump($changelog));
+    }
+
+    public function testDumpMultipleFeatures(): void
+    {
+        $changelog = new Changelog(Semver::fromString('1.0.0'), Semver::fromString('2.0.0'));
+        $changelog->commits = [
+            new Commit('hash', 'feat', 'feature', 'Add the feature'),
+            new Commit('hash', 'feat', 'feature', 'Add another feature'),
+        ];
+
+        $dumper = new MarkdownChangelogDumper(new EmptyRemoteAdapter());
+
+        $expected = <<<MARKDOWN
+## 2.0.0 (2024-01-01)
+
+### Features
+
+ * feat(feature): Add the feature (hash)
+ * feat(feature): Add another feature (hash)
 
 MARKDOWN;
 

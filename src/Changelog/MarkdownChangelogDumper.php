@@ -33,10 +33,10 @@ readonly class MarkdownChangelogDumper implements ChangelogDumperInterface, File
             $output = sprintf('## %s (%s)', ltrim($changelog->toVersion, 'v'), (new DatePoint())->format('Y-m-d'));
         }
 
-        $output .= "\n\n";
+        $output .= "\n";
 
         if (0 === \count($changelog->commits)) {
-            $output .= " * _(empty release)_\n";
+            $output .= "\n * _(empty release)_\n";
 
             return $output;
         }
@@ -46,12 +46,8 @@ readonly class MarkdownChangelogDumper implements ChangelogDumperInterface, File
                 continue;
             }
 
-            $output .= sprintf('### %s', ucfirst($type))."\n\n";
+            $output .= "\n".sprintf('### %s', ucfirst($type))."\n\n";
             $output .= $this->dumpCommits($commit);
-
-            if (array_key_last($changelog->sortedCommits()) !== $type) {
-                $output .= "\n";
-            }
         }
 
         return $output;
@@ -70,10 +66,10 @@ readonly class MarkdownChangelogDumper implements ChangelogDumperInterface, File
                 continue;
             }
 
-            $output .= sprintf(' * %s (%s)', $commit, $commit->getHash());
+            $output .= sprintf(" * %s (%s)\n", $commit, $commit->getHash());
         }
 
-        return $output."\n";
+        return $output;
     }
 
     /**
