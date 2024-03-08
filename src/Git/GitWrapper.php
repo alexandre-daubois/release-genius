@@ -119,6 +119,11 @@ final class GitWrapper
                 $commit = RawCommit::fromString($rawCommit);
             }
 
+            // ignore any release commit
+            if ($commit instanceof Commit && $commit->type === 'chore' && $commit->scope === 'release') {
+                continue;
+            }
+
             $changeLog->commits[] = $commit;
         }
 
