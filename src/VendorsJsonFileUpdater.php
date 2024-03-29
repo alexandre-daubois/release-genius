@@ -9,6 +9,9 @@ class VendorsJsonFileUpdater
 {
     public static function update(Semver $semver, string $filename): void
     {
+        $semver = clone $semver;
+        $semver->usesPrefix = false; // never use prefix on package.json
+
         $packageJson = @file_get_contents($filename);
         if (false === $packageJson) {
             throw new VendorFileNotFoundException(sprintf('"%s" not found', $filename));
